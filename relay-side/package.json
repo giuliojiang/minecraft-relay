@@ -1,0 +1,23 @@
+{
+  "name": "minecraft-relay-relay",
+  "version": "0.0.1",
+  "description": "A relay that allows a firewall-protected machine to run a minecraft server and allow connections forwarded through an external TCP server",
+  "main": "index.js",
+  "dependencies": {
+    "net": "^1.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giuliojiang/minecraft-relay.git"
+  },
+  "author": "Giulio Jiang",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/giuliojiang/minecraft-relay/issues"
+  },
+  "homepage": "https://github.com/giuliojiang/minecraft-relay#readme"
+}

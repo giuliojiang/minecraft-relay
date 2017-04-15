@@ -1,0 +1,21 @@
+CONNECTIONS
+
+    LINKS
+    
+        server: minecraft server
+            TCP raw minecraft data
+        server: minecraft-relay server component
+            TCP with custom headers
+        relay: minecraft-relay relay component
+        
+    HANDSHAKE
+    
+        Start the Relay server on port X. Port X is used for administration and communications incoming from the minecraft server.
+        
+        Start the Server component. Server component connects to the Relay component: X to register itself and exchange all the data.
+        
+        Start the Minecraft server.
+        
+        Users connect to the Relay. The Relay will send all the data to the Server component multiplexed in a custom format, and the Server component will create several local TCP connections to the Minecraft server.
+        
+        Responses will go similarly through the multiplexed channel.
