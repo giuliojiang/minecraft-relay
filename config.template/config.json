@@ -1,0 +1,5 @@
+{
+    "relay_port": 25565,
+    "relay_tunnel_port": 13565,
+    "minecraft_server_port": 25565
+}
