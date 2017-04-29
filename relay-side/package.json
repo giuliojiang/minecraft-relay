@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "net": "^1.0.2",
-    "rawconf": "*"
+    "rawconf": "0.0.2"
   },
   "devDependencies": {},
   "scripts": {
