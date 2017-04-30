@@ -36,7 +36,11 @@ async.waterfall([
     
     // Start the tunnel network listener
     function(callback) {
-        console.log("Tunnel network listener not implemented yet");
+        
+        var relay_listener = require(__dirname + "/relay_listener.js");
+        relay_listener.start();
+        
+        console.log("Relay listener module loaded");
         
         async.setImmediate(() => {
             callback(null);

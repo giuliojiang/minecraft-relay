@@ -1,6 +1,8 @@
 var net = require("net");
 var rawconf = require("rawconf");
 
+var sessions = require(__dirname + "/sessions.js");
+
 var start = function() {
     var config = rawconf.get_config();
 
@@ -8,17 +10,16 @@ var start = function() {
         
         // Identify this client
         socket.name = socket.remoteAddress + ":" + socket.remotePort;
-        
-        console.log("A new client connected: " + socket.name);
-        
+        sessions.client_connected(socket);
+
         // Handle incoming data
         socket.on("data", (data) => {
-            console.log("Received data from ["+socket.name+"] ["+data+"]");
+            sessions.client_data(socket, data);
         });
         
         // Connection close
         socket.on("end", () => {
-            console.log("Client disconnected ["+socket.name+"]");
+            sessions.client_disconnected(socket);
         });
         
     }).listen(config.relay_port);

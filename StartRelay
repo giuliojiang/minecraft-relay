@@ -1,0 +1,3 @@
+#! /bin/bash
+make client
+cd relay-side && node relay_main.js

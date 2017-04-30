@@ -34,6 +34,7 @@ var package_data = function(data, clientnumber) {
 };
 
 // Receive some data from the tunnel
+// Automatically sends the data to the correct client
 var receive_data = function(data) {
     buf += data;
     try_parse();
@@ -89,13 +90,9 @@ var try_parse = function() {
             // and remember the rest in the buffer
             var current_data_block = data_str.substring(0, datalength);
             buf = data_str.substring(datalength);
-            process_received_tunnel_data(clientnumber, current_data_block);
+            sessions.send_to_client(clientnumber, current_data_block);
         }
     }
-};
-
-var process_received_tunnel_data = function(clientnumber, clear_data) {
-    sessions.send_to_client(clientnumber, clear_data);
 };
 
 // //////////
