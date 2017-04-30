@@ -4,6 +4,7 @@
   "description": "A relay that allows a firewall-protected machine to run a minecraft server and allow connections forwarded through an external TCP server",
   "main": "index.js",
   "dependencies": {
+    "bimap": "0.0.15",
     "net": "^1.0.2",
     "rawconf": "0.0.2"
   },

@@ -1,2 +1,2 @@
 all:
-	npm --save install net
+	npm install

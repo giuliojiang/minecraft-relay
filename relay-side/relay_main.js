@@ -22,9 +22,11 @@ async.waterfall([
     
     // Start the external network listener
     function(callback) {
-        console.log("External network listener not implemented yet");
         
         var listener = require(__dirname + "/listener.js");
+        listener.start();
+        
+        console.log("Listener module loaded");
         
         async.setImmediate(() => {
             callback(null);
