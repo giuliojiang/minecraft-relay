@@ -4,3 +4,10 @@ all: client
 
 client:
 	python script/initialize_config.py
+
+test: all
+	cd relay-side && make test
+
+force:
+	cd relay-side && make force
+	cd server-side && make force
