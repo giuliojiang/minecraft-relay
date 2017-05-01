@@ -18,13 +18,13 @@ var server = net.createServer(function(socket) {
     socket.on("end", () => {
         console.log("Client ended connection");
     });
-}).listen(23100, "0.0.0.0");
+}).listen(24100, "0.0.0.0");
 
 // connect to minecraft
 
 var mc = new net.Socket();
 
-mc.connect(24100, "127.0.0.1", function() {
+mc.connect(25565, "127.0.0.1", function() {
     console.log("connected to minecraft");
     mc.setEncoding("hex");
     mc.setNoDelay(false);

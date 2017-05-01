@@ -68,7 +68,11 @@ module.exports.send_to_client = function(clientnumber, clear_data) {
         throw new Error("Could not find client socket by name ["+clientname+"]");
     }
 
-    clientsocket.write(clear_data, "hex");
+    console.log("    to client");
+    clientsocket.write(clear_data, "hex", function() {
+        console.log("        written");
+    }
+    );
 };
 
 // Client disconnected

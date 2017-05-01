@@ -2,6 +2,7 @@
 
 var net = require("net");
 var rawconf = require("rawconf");
+var async = require("async");
 
 var sessions = require(__dirname + "/sessions.js");
 
@@ -11,6 +12,7 @@ var start = function() {
     net.createServer((socket) => {
         
         socket.setEncoding("hex");
+        socket.setNoDelay(true);
         
         // Identify this client
         socket.name = socket.remoteAddress + ":" + socket.remotePort;
@@ -18,7 +20,9 @@ var start = function() {
 
         // Handle incoming data
         socket.on("data", (data) => {
-            sessions.client_data(socket, data);
+            async.setImmediate(function() {
+                sessions.client_data(socket, data);
+            });
         });
         
         // Connection close

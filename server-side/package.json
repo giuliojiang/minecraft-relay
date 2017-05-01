@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/giuliojiang/minecraft-relay#readme",
   "dependencies": {
+    "async": "^2.4.0",
     "net": "^1.0.2",
     "rawconf": "0.0.2"
   }

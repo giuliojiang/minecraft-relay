@@ -8,6 +8,7 @@ Map
 */
 
 var net = require("net");
+var async = require("async");
 
 var rawconf = require("rawconf");
 var config = rawconf.get_config();
@@ -27,18 +28,19 @@ module.exports.communicate = function(client_number, data) {
     if (!clients[client_number]) {
         
         var new_client = new net.Socket();
-        
-        new_client.setEncoding("hex");
-        
+
         new_client.connect(config.minecraft_server_port, "127.0.0.1", function() {
             console.log("Client ["+client_number+"] connected to minecraft server");
-            new_client.write(data, "hex");
+            new_client.setEncoding("hex");
+            new_client.setNoDelay(true);
         });
         
         
         // TODO check correctness, due to closure's value of new_client
         new_client.on("data", function(data) {
-            tunnel.data_from_client(client_number, data);
+            async.setImmediate(function() {
+                tunnel.data_from_client(client_number, data);
+            });
         });
         
         new_client.on("close", function() {
@@ -50,9 +52,14 @@ module.exports.communicate = function(client_number, data) {
         
         clients[client_number] = new_client;
         
-    } else {
-        clients[client_number].write(data, "hex");
     }
+
+    console.log("to mc (existing) ");
+    clients[client_number].write(data, "hex", function() {
+        console.log("        written");
+    }
+    );
+
 
 };
 

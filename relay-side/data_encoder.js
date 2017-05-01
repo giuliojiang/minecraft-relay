@@ -27,7 +27,8 @@ var buf = "";
 // //////////
 
 // Create the packaged data to be sent through the tunnel
-var package_data = function(data, clientnumber) {
+var package_data = function(data_in, clientnumber) {
+    var data = data_in;
     var length = data.length;
     var res = format_number_length(clientnumber) + format_number_length(length) + data;
     return res;
@@ -59,17 +60,26 @@ var format_number_length = function(num) {
 };
 
 var try_parse = function() {
+    var res = [];
+    var one_block = parse_one();
+    while (one_block) {
+        res.push(one_block);
+        one_block = parse_one();
+    }
+    return res;
+};
+
+var parse_one = function() {
     if (buf.length >= header_length) {
         var clientnumber_str = buf.substring(0, 6);
         var datalength_str = buf.substring(6, 12);
-        var data_str = buf.substring(12); // Get rest of data
-        
+
         // Try to parse the client number
         var clientnumber = parseInt(clientnumber_str);
         if (isNaN(clientnumber)) {
             console.log("could not parse client number");
             buf = buf.substring(1);
-            return try_parse();
+            return parse_one();
         }
         
         // Try to parse the data length string
@@ -77,17 +87,20 @@ var try_parse = function() {
         if (isNaN(datalength)) {
             console.log("could not parse data length");
             buf = buf.substring(1);
-            return try_parse();
+            return parse_one();
         }
         
-        if (data_str.length < datalength) {
+        var data_str_len = buf.length - 12;
+
+        if (data_str_len < datalength) {
             // not enough data received, do nothing for now
             return null;
         } else {
             // need to substring the first part of data
             // and remember the rest in the buffer
-            var current_data_block = data_str.substring(0, datalength);
-            buf = data_str.substring(datalength);
+            var current_data_block = buf.substring(12, datalength + 12);
+            buf = buf.substring(datalength + 12);
+
             return [clientnumber, current_data_block];
         }
     }

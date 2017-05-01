@@ -1,5 +1,6 @@
 var net = require("net");
 var rawconf = require("rawconf");
+var async = require("async");
 
 var data_encoder = require(__dirname + "/../relay-side/data_encoder.js");
 var minecraft_connections = require(__dirname + "/minecraft_connections.js");
@@ -19,9 +20,7 @@ module.exports.connect = function() {
     var config = rawconf.get_config();
     
     client = new net.Socket();
-    
-    client.setEncoding("hex");
-    
+
     if (!config.relay_tunnel_port) {
         throw new Error("relay_tunnel_port configuration not set");
     }
@@ -31,20 +30,27 @@ module.exports.connect = function() {
     }
     
     client.connect(config.relay_tunnel_port, config.relay_address, function() {
+        client.setEncoding("hex");
+        client.setNoDelay(true);
         console.log("Connected to the relay");
     });
     
     client.on("data", function(data) {
-        // demultiplex and send to minecraft
-        var decoded_data = data_encoder.receive_data(data);
-        if (!decoded_data) {
-            return; // not enough data yet
-        } else {
-            // send to clients
-            var client_number = decoded_data[0];
-            var client_data = decoded_data[1];
-            minecraft_connections.communicate(client_number, client_data);
-        }
+        async.setImmediate(function() {
+            // demultiplex and send to minecraft
+            var decoded_data_arr = data_encoder.receive_data(data);
+            if (decoded_data_arr.length == 0) {
+                return; // not enough data yet
+            } else {
+                for (var i = 0; i < decoded_data_arr.length; i++) {
+                    var decoded_data = decoded_data_arr[i];
+                    // send to clients
+                    var client_number = decoded_data[0];
+                    var client_data = decoded_data[1];
+                    minecraft_connections.communicate(client_number, client_data);
+                }
+            }
+        });
     });
     
     client.on("close", function() {
@@ -58,6 +64,7 @@ module.exports.connect = function() {
 module.exports.data_from_client = function(client_number, data) {
     // Multiplex and send through tunnel
     var datapackage = data_encoder.package_data(data, client_number);
+    console.log("    FROM mc ");
     client.write(datapackage, "hex");
 };
 
