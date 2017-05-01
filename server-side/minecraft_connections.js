@@ -50,6 +50,8 @@ module.exports.communicate = function(client_number, data) {
             tunnel.data_from_client(999999, ("" + client_number)); // Special close connection message
         });
         
+        new_client.on("error", function() {});
+
         clients[client_number] = new_client;
         
     }

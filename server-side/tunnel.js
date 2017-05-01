@@ -57,6 +57,8 @@ module.exports.connect = function() {
         console.log("Connection to relay closed");
     });
     
+    client.on("error", function() {});
+    
 };
 
 // Receive data from client. Forward the data in the tunnel
@@ -65,6 +67,10 @@ module.exports.data_from_client = function(client_number, data) {
     // Multiplex and send through tunnel
     var datapackage = data_encoder.package_data(data, client_number);
     console.log("    FROM mc ");
-    client.write(datapackage, "hex");
+    try {
+        client.write(datapackage, "hex");
+    } catch (err) {
+        console.log(err);
+    }
 };
 

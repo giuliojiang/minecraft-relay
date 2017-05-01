@@ -43,7 +43,11 @@ module.exports.start = function() {
                             var disconnecting_client = parseInt(decoded_data[1]);
                             sessions.close_client_connection(disconnecting_client);
                         } else {
-                            sessions.send_to_client(decoded_data[0], decoded_data[1]);
+                            try {
+                                sessions.send_to_client(decoded_data[0], decoded_data[1]);
+                            } catch (err) {
+                                console.log(err);
+                            }
                         }
                     }
                 }
