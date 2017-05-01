@@ -5,3 +5,6 @@ node_modules:
 
 force:
 	npm install
+
+test:
+	echo "no server-side tests defined yet"

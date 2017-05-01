@@ -7,6 +7,7 @@ client:
 
 test: all
 	cd relay-side && make test
+	cd server-side && make test
 
 force:
 	cd relay-side && make force

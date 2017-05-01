@@ -21,11 +21,16 @@ async.waterfall([
 
 ], (err, res) => {
     if (err) {
+        console.error("An error has occurred during the tests:");
         console.error(err);
         process.exit(1);
     } else {
         console.log("TESTSUITE completed");
         console.log(jassert.format());
-        process.exit(jassert.all_tests_passed ? 0 : 1);
+        if (jassert.all_tests_passed()) {
+            process.exit(0);
+        } else {
+            process.exit(1);
+        }
     }
 });

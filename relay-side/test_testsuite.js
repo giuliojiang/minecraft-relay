@@ -9,12 +9,19 @@ var tests = [];
 // generate_file_path tests
 tests.push(function(callback) {
     async.each(test_data_encoder.tests, (test, callback) => {
-        test((err, res) => {
+        try {
+            test((err, res) => {
+                async.setImmediate(() => {
+                    callback(err, res);
+                    return;
+                });
+            });
+        } catch (err) {
             async.setImmediate(() => {
-                callback(err, res);
+                callback(err);
                 return;
             });
-        });
+        }
     }, function(err) {
         callback(err);
     });
