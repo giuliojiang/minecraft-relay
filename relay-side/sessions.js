@@ -38,7 +38,6 @@ var next_client_number = 0;
 // Generate new sequence number and add to the bidirectional map
 module.exports.client_connected = function(socket) {
     socket.name = socket.remoteAddress + ":" + socket.remotePort;
-    socket.setEncoding('utf8');
     
     var current_client_number = next_client_number;
     next_client_number += 1;
@@ -51,12 +50,9 @@ module.exports.client_connected = function(socket) {
 // Receive data from a client
 // Package the data and send through the relay
 module.exports.client_data = function(socket, data) {
-    console.log("Client data ["+data+"]");
-    
     var clientinfo = clients.key(socket.name);
     var clientnumber = clientinfo[1];
     var datablock = data_encoder.package_data(data, clientnumber);
-    console.log("Encoded data ["+datablock+"]");
     relay_listener.send(datablock);
 };
 
@@ -64,15 +60,15 @@ module.exports.client_data = function(socket, data) {
 module.exports.send_to_client = function(clientnumber, clear_data) {
     var clientname = clients.val(clientnumber);
     if (!clientname) {
-        console.log("Could not find client number ["+clientnumber+"]");
+        throw new Error("Could not find client number ["+clientnumber+"]");
     }
     
-    var clientsocket = clients.key(clientname);
+    var clientsocket = clients.key(clientname)[0];
     if (!clientsocket) {
-        console.log("Could not find client socket by name ["+clientname+"]");
+        throw new Error("Could not find client socket by name ["+clientname+"]");
     }
-    
-    clientsocket.write(clear_data);
+
+    clientsocket.write(clear_data, "hex");
 };
 
 // Client disconnected

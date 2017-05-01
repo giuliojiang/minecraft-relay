@@ -1,3 +1,5 @@
+// Listens to client connections
+
 var net = require("net");
 var rawconf = require("rawconf");
 
@@ -7,6 +9,8 @@ var start = function() {
     var config = rawconf.get_config();
 
     net.createServer((socket) => {
+        
+        socket.setEncoding("hex");
         
         // Identify this client
         socket.name = socket.remoteAddress + ":" + socket.remotePort;
@@ -22,7 +26,7 @@ var start = function() {
             sessions.client_disconnected(socket);
         });
         
-    }).listen(config.relay_port, "::");
+    }).listen(config.relay_port, "0.0.0.0");
 
 };
 

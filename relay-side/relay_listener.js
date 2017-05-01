@@ -1,3 +1,5 @@
+// Listens on the tunnel (from the server)
+
 var net = require("net");
 var rawconf = require("rawconf");
 
@@ -15,6 +17,8 @@ module.exports.start = function() {
 
     net.createServer((socket) => {
         
+        socket.setEncoding("hex");
+        
         server_side_socket = socket;
         
         // Identify this client
@@ -24,17 +28,14 @@ module.exports.start = function() {
         
         // Handle incoming data
         socket.on("data", (data) => {
-            console.log("Data from tunnel ["+data+"]");
             // Decode data and send to relevant client
             var decoded_data = data_encoder.receive_data(data);
             if (!decoded_data) {
                 return;
             } else {
-                console.log("Got a decode");
                 if (decoded_data[0] == 999999) {
                     // close connection message
                     var disconnecting_client = parseInt(decoded_data[1]);
-                    console.log("Disconnecting client ["+disconnecting_client+"]");
                     sessions.close_client_connection(disconnecting_client);
                 } else {
                     sessions.send_to_client(decoded_data[0], decoded_data[1]);
@@ -49,13 +50,13 @@ module.exports.start = function() {
             console.log("Server side disconnected ["+socket.name+"]");
         });
         
-    }).listen(config.relay_tunnel_port, "::");
+    }).listen(config.relay_tunnel_port, "0.0.0.0");
 
 };
 
 module.exports.send = function(data) {
     if (server_side_socket) {
-        server_side_socket.write(data);
+        server_side_socket.write(data, "hex");
     } else {
         console.log("Tried to send through tunnel, but tunnel connection is not open ["+data+"]");
     }

@@ -24,27 +24,15 @@ var clients = {};
 // //////////
 
 module.exports.communicate = function(client_number, data) {
-    connect_if_not_exists(client_number);
-    
-    var clientsocket = clients[client_number];
-    
-    console.log("Writing to ["+client_number+"] data ["+data+"]");
-    
-    // clientsocket.write(data);
-    // clientsocket.pipe(clientsocket);
-};
-
-// //////////
-// Private methods
-// //////////
-
-var connect_if_not_exists = function(client_number) {
     if (!clients[client_number]) {
         
         var new_client = new net.Socket();
         
-        new_client.connect(config.minecraft_server_port, "localhost", function() {
+        new_client.setEncoding("hex");
+        
+        new_client.connect(config.minecraft_server_port, "127.0.0.1", function() {
             console.log("Client ["+client_number+"] connected to minecraft server");
+            new_client.write(data, "hex");
         });
         
         
@@ -62,7 +50,12 @@ var connect_if_not_exists = function(client_number) {
         
         clients[client_number] = new_client;
         
+    } else {
+        clients[client_number].write(data, "hex");
     }
-    
-    return clients[client_number];
+
 };
+
+// //////////
+// Private methods
+// //////////

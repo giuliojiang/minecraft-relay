@@ -82,7 +82,6 @@ var try_parse = function() {
         
         if (data_str.length < datalength) {
             // not enough data received, do nothing for now
-            console.log("not enough data received ["+data_str+"]<["+data_str.length+"]");
             return null;
         } else {
             // need to substring the first part of data

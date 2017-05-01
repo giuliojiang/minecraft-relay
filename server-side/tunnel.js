@@ -20,7 +20,7 @@ module.exports.connect = function() {
     
     client = new net.Socket();
     
-    client.setEncoding("utf8");
+    client.setEncoding("hex");
     
     if (!config.relay_tunnel_port) {
         throw new Error("relay_tunnel_port configuration not set");
@@ -35,8 +35,6 @@ module.exports.connect = function() {
     });
     
     client.on("data", function(data) {
-        console.log("Received from Relay: " + data);
-        
         // demultiplex and send to minecraft
         var decoded_data = data_encoder.receive_data(data);
         if (!decoded_data) {
@@ -60,6 +58,6 @@ module.exports.connect = function() {
 module.exports.data_from_client = function(client_number, data) {
     // Multiplex and send through tunnel
     var datapackage = data_encoder.package_data(data, client_number);
-    client.write(datapackage);
+    client.write(datapackage, "hex");
 };
 
