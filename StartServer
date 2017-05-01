@@ -1,0 +1,3 @@
+#! /bin/bash
+make client
+cd server-side && node server_main.js

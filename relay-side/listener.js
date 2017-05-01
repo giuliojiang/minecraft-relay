@@ -22,7 +22,7 @@ var start = function() {
             sessions.client_disconnected(socket);
         });
         
-    }).listen(config.relay_port);
+    }).listen(config.relay_port, "::");
 
 };
 

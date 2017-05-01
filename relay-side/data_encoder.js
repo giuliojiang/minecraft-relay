@@ -34,10 +34,10 @@ var package_data = function(data, clientnumber) {
 };
 
 // Receive some data from the tunnel
-// Automatically sends the data to the correct client
+// Returns [clientnumber, decodeddata] or null if not enough data received
 var receive_data = function(data) {
     buf += data;
-    try_parse();
+    return try_parse();
 };
 
 // //////////
@@ -69,8 +69,7 @@ var try_parse = function() {
         if (isNaN(clientnumber)) {
             console.log("could not parse client number");
             buf = buf.substring(1);
-            try_parse();
-            return;
+            return try_parse();
         }
         
         // Try to parse the data length string
@@ -78,19 +77,19 @@ var try_parse = function() {
         if (isNaN(datalength)) {
             console.log("could not parse data length");
             buf = buf.substring(1);
-            try_parse();
-            return;
+            return try_parse();
         }
         
-        if (data_str < datalength) {
+        if (data_str.length < datalength) {
             // not enough data received, do nothing for now
-            return;
+            console.log("not enough data received ["+data_str+"]<["+data_str.length+"]");
+            return null;
         } else {
             // need to substring the first part of data
             // and remember the rest in the buffer
             var current_data_block = data_str.substring(0, datalength);
             buf = data_str.substring(datalength);
-            sessions.send_to_client(clientnumber, current_data_block);
+            return [clientnumber, current_data_block];
         }
     }
 };

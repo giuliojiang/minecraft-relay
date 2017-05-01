@@ -36,7 +36,7 @@ var next_client_number = 0;
 
 // Handle a new client that connected
 // Generate new sequence number and add to the bidirectional map
-var client_connected = function(socket) {
+module.exports.client_connected = function(socket) {
     socket.name = socket.remoteAddress + ":" + socket.remotePort;
     socket.setEncoding('utf8');
     
@@ -50,7 +50,7 @@ var client_connected = function(socket) {
 
 // Receive data from a client
 // Package the data and send through the relay
-var client_data = function(socket, data) {
+module.exports.client_data = function(socket, data) {
     console.log("Client data ["+data+"]");
     
     var clientinfo = clients.key(socket.name);
@@ -61,7 +61,7 @@ var client_data = function(socket, data) {
 };
 
 // Send packaged data to client
-var send_to_client = function(clientnumber, clear_data) {
+module.exports.send_to_client = function(clientnumber, clear_data) {
     var clientname = clients.val(clientnumber);
     if (!clientname) {
         console.log("Could not find client number ["+clientnumber+"]");
@@ -76,21 +76,18 @@ var send_to_client = function(clientnumber, clear_data) {
 };
 
 // Client disconnected
-var client_disconnected = function(socket) {
+module.exports.client_disconnected = function(socket) {
     clients.removeKey(socket.name);
+};
+
+// Disconnect from server side
+module.exports.close_client_connection = function(cid) {
+    var cname = clients.val(cid);
+    var csocket = clients.key(cname)[0];
+    csocket.destroy();
+    clients.removeKey(cname);
 };
 
 // //////////
 // Private methods
 // //////////
-
-// //////////
-// Exports
-// //////////
-
-module.exports = {
-    client_connected: client_connected,
-    client_data: client_data,
-    send_to_client: send_to_client,
-    client_disconnected: client_disconnected
-};

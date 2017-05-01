@@ -47,11 +47,8 @@ tests.push(function(callback) {
     
     var in_str = "000023000046ciao_ciao_qwerty_abcd_faser_enemy_exploit_csrf";
     
-    data_encoder.receive_data(in_str);
+    var last_entry = data_encoder.receive_data(in_str);
 
-    var recd = test_mock_session.get_rec().send_to_client;
-    var last_entry = recd[recd.length - 1];
-    
     jassert.assert_equal_deep(23, last_entry[0]);
     jassert.assert_equal_deep("ciao_ciao_qwerty_abcd_faser_enemy_exploit_csrf", last_entry[1]);
 
@@ -66,20 +63,16 @@ tests.push(function(callback) {
     var in_str_1 = "00002300";
     var in_str_2 = "0046ciao_ciao_qwerty_abcd_faser_enemy_exploit_csrf";
     
-    data_encoder.receive_data(in_str_1);
+    var last_entry = data_encoder.receive_data(in_str_1);
     
     // there should have been no calls to send_to_client now
-    jassert.assert_equal_deep(0, test_mock_session.get_rec().send_to_client.length);
+    jassert.assert_true(!last_entry);
     
     // now send the second part, which completes the message
-    data_encoder.receive_data(in_str_2);
-    
-    // there should have been 1 call to send_to_client
-    var send_to_client_rec = test_mock_session.get_rec().send_to_client;
-    var recorded_call = send_to_client_rec[send_to_client_rec.length - 1];
-    
-    jassert.assert_equal_deep(23, recorded_call[0]);
-    jassert.assert_equal_deep("ciao_ciao_qwerty_abcd_faser_enemy_exploit_csrf", recorded_call[1]);
+    last_entry = data_encoder.receive_data(in_str_2);
+
+    jassert.assert_equal_deep(23, last_entry[0]);
+    jassert.assert_equal_deep("ciao_ciao_qwerty_abcd_faser_enemy_exploit_csrf", last_entry[1]);
     
     callback(null);
 });
