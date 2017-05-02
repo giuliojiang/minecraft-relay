@@ -2,5 +2,6 @@
     "relay_port": 23100,
     "relay_tunnel_port": 13565,
     "relay_address": "localhost",
+    "relay_max_clients": 10,
     "minecraft_server_port": 25565
 }
