@@ -13,6 +13,7 @@ var async = require("async");
 var rawconf = require("rawconf");
 var config = rawconf.get_config();
 var tunnel = require(__dirname + "/tunnel.js");
+var data_encoder = require(__dirname + "/../relay-side/data_encoder.js");
 
 // //////////
 // Data
@@ -45,9 +46,10 @@ module.exports.communicate = function(client_number, data) {
         
         new_client.on("close", function() {
             console.log("Minecraft server disconnected ["+client_number+"]");
+            console.log("Sending disconnect through tunnel");
             new_client.destroy();
             console.log(tunnel.connect);
-            tunnel.data_from_client(999999, ("" + client_number)); // Special close connection message
+            tunnel.data_from_client(999999, data_encoder.format_number_length(client_number)); // Special close connection message
         });
         
         new_client.on("error", function() {});
@@ -56,13 +58,24 @@ module.exports.communicate = function(client_number, data) {
         
     }
 
-    console.log("to mc (existing) ");
-    clients[client_number].write(data, "hex", function() {
-        console.log("        written");
+    try {
+        clients[client_number].write(data, "hex");
+    } catch (err) {
+        console.log(err);
     }
-    );
 
 
+};
+
+module.exports.force_disconnect_number = function(connection_number) {
+    var client_socket = clients[connection_number];
+    if (!client_socket) {
+        console.log("Tried to disconnect connection ["+connection_number+"] but didn't find it in the mapping");
+        return;
+    }
+    
+    client_socket.destroy();
+    delete clients[connection_number];
 };
 
 // //////////

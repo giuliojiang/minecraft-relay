@@ -68,22 +68,31 @@ module.exports.send_to_client = function(clientnumber, clear_data) {
         throw new Error("Could not find client socket by name ["+clientname+"]");
     }
 
-    console.log("    to client");
-    clientsocket.write(clear_data, "hex", function() {
-        console.log("        written");
-    }
-    );
+    clientsocket.write(clear_data, "hex");
 };
 
-// Client disconnected
+// Client disconnected (from client)
 module.exports.client_disconnected = function(socket) {
+    var socketname = socket.name;
+    var clientnumber = clients.key(socketname)[1];
+
     clients.removeKey(socket.name);
+    
+    // Send special message for client disconnect
+    console.log("Sending disconnect message for client ["+clientnumber+"]");
+    var datablock = data_encoder.package_data(data_encoder.format_number_length(clientnumber), 999999);
+    relay_listener.send(datablock);
 };
 
-// Disconnect from server side
+// Client disconnected (from relay, force client to disconnect)
 module.exports.close_client_connection = function(cid) {
     var cname = clients.val(cid);
-    var csocket = clients.key(cname)[0];
+    var csocket_val = clients.key(cname);
+    if (!csocket_val) {
+        console.log("Trying to force disconnect client ["+cid+"] but didn't find it in the mapping");
+        return;
+    }
+    var csocket = csocket_val[0];
     csocket.destroy();
     clients.removeKey(cname);
 };

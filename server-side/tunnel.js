@@ -44,17 +44,27 @@ module.exports.connect = function() {
             } else {
                 for (var i = 0; i < decoded_data_arr.length; i++) {
                     var decoded_data = decoded_data_arr[i];
-                    // send to clients
-                    var client_number = decoded_data[0];
-                    var client_data = decoded_data[1];
-                    minecraft_connections.communicate(client_number, client_data);
+                    
+                    if (decoded_data[0] == 999999) {
+                        var disconnecting_client = parseInt(decoded_data[1]);
+                        console.log("Received a disconnect code for client ["+disconnecting_client+"]");
+                        minecraft_connections.force_disconnect_number(disconnecting_client);
+                    } else {
+                        // send to clients
+                        var client_number = decoded_data[0];
+                        var client_data = decoded_data[1];
+                        minecraft_connections.communicate(client_number, client_data);
+                    }
                 }
             }
         });
     });
     
     client.on("close", function() {
-        console.log("Connection to relay closed");
+        console.log("Connection to relay closed. Attempting reconnection...");
+        async.setImmediate(function() {
+            module.exports.connect();
+        });
     });
     
     client.on("error", function() {});
@@ -66,7 +76,6 @@ module.exports.connect = function() {
 module.exports.data_from_client = function(client_number, data) {
     // Multiplex and send through tunnel
     var datapackage = data_encoder.package_data(data, client_number);
-    console.log("    FROM mc ");
     try {
         client.write(datapackage, "hex");
     } catch (err) {

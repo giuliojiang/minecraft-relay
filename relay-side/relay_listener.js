@@ -41,6 +41,7 @@ module.exports.start = function() {
                         if (decoded_data[0] == 999999) {
                             // close connection message
                             var disconnecting_client = parseInt(decoded_data[1]);
+                            console.log("Received a disconnect code for client ["+disconnecting_client+"]");
                             sessions.close_client_connection(disconnecting_client);
                         } else {
                             try {
@@ -66,8 +67,11 @@ module.exports.start = function() {
 
 module.exports.send = function(data) {
     if (server_side_socket) {
-        console.log("to tunnel");
-        server_side_socket.write(data, "hex");
+        try {
+            server_side_socket.write(data, "hex");
+        } catch (err) {
+            console.error(err);
+        }
     } else {
         console.log("Tried to send through tunnel, but tunnel connection is not open ["+data+"]");
     }

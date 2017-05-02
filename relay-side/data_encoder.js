@@ -26,6 +26,20 @@ var buf = "";
 // Public methods
 // //////////
 
+var number_length = 6;
+var header_length = 12;
+
+var format_number_length = function(num) {
+    var r = "" + num;
+    if (r.length > number_length) {
+        throw "Error! Number overflowed allowed length " + num;
+    }
+    while (r.length < number_length) {
+        r = "0" + r;
+    }
+    return r;
+};
+
 // Create the packaged data to be sent through the tunnel
 var package_data = function(data_in, clientnumber) {
     var data = data_in;
@@ -44,20 +58,6 @@ var receive_data = function(data) {
 // //////////
 // Private methods
 // //////////
-
-var number_length = 6;
-var header_length = 12;
-
-var format_number_length = function(num) {
-    var r = "" + num;
-    if (r.length > number_length) {
-        throw "Error! Number overflowed allowed length " + num;
-    }
-    while (r.length < number_length) {
-        r = "0" + r;
-    }
-    return r;
-};
 
 var try_parse = function() {
     var res = [];
@@ -112,5 +112,6 @@ var parse_one = function() {
 
 module.exports = {
     package_data: package_data,
-    receive_data: receive_data
+    receive_data: receive_data,
+    format_number_length: format_number_length
 }
