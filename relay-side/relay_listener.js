@@ -61,6 +61,12 @@ module.exports.start = function() {
             console.log("Server side disconnected ["+socket.name+"]");
         });
         
+        // Errors
+        socket.on("error", (err) => {
+            console.log("An error occurred in relay_listener.js");
+            console.error(err);
+        });
+        
     }).listen(config.relay_tunnel_port, "0.0.0.0");
 
 };

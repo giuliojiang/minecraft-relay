@@ -30,6 +30,12 @@ var start = function() {
             sessions.client_disconnected(socket);
         });
         
+        // Errors
+        socket.on("error", (err) => {
+            console.log("An error occurred in listener.js");
+            console.error(err);
+        });
+        
     }).listen(config.relay_port, "0.0.0.0");
 
 };
