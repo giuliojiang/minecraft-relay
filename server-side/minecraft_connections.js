@@ -52,7 +52,10 @@ module.exports.communicate = function(client_number, data) {
             tunnel.data_from_client(999999, data_encoder.format_number_length(client_number)); // Special close connection message
         });
         
-        new_client.on("error", function() {});
+        new_client.on("error", function(err) {
+            console.log("An error occurred in minecraft_connection.js for client ["+client_number+"]");
+            console.error(err);
+        });
 
         clients[client_number] = new_client;
         

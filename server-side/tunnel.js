@@ -67,7 +67,10 @@ module.exports.connect = function() {
         });
     });
     
-    client.on("error", function() {});
+    client.on("error", function(err) {
+        console.log("An error occurred in server-side tunnel.js");
+        console.error(err);
+    });
     
 };
 
